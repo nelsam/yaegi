@@ -3,6 +3,7 @@ package interp
 import (
 	"log"
 	"reflect"
+	"slices"
 	"strconv"
 )
 
@@ -128,10 +129,19 @@ func (s *scope) upperLevel() *scope {
 // lookup searches for a symbol in the current scope, and upper ones if not found
 // it returns the symbol, the number of indirections level from the current scope
 // and status (false if no result).
-func (s *scope) lookup(ident string) (*symbol, int, bool) {
+//
+// If kinds is provided, then lookup will continue to recurse past symbols that
+// are not in the kinds slice.
+func (s *scope) lookup(ident string, kinds ...sKind) (*symbol, int, bool) {
 	level := s.level
+	match := func(k sKind) bool {
+		if len(kinds) == 0 {
+			return true
+		}
+		return slices.Contains(kinds, k)
+	}
 	for {
-		if sym, ok := s.sym[ident]; ok {
+		if sym, ok := s.sym[ident]; ok && match(sym.kind) {
 			if sym.global {
 				return sym, globalFrame, true
 			}

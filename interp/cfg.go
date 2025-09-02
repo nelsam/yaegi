@@ -290,7 +290,7 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 			}
 			// Handle labeled statements.
 			label := n.child[0].ident
-			if sym, _, ok := sc.lookup(label); ok {
+			if sym, _, ok := sc.lookup(label, labelSym); ok {
 				if sym.kind != labelSym {
 					err = n.child[0].cfgErrorf("label %s not defined", label)
 					break
