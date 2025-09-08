@@ -257,7 +257,8 @@ func (e *Extractor) genContent(importPath string, p *types.Package, fset *token.
 					params := make([]string, len(args))
 					for j := range args {
 						v := sign.Params().At(j)
-						if args[j] = v.Name(); args[j] == "" {
+						switch args[j] = v.Name(); args[j] {
+						case "", "_":
 							args[j] = fmt.Sprintf("a%d", j)
 						}
 						// process interface method variadic parameter
